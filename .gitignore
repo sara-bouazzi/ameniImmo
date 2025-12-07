@@ -1,0 +1,21 @@
+# Environnement virtuel
+venv/
+
+# Fichiers compilés Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Base de données locale
+db.sqlite3
+
+# Fichiers statiques et médias générés
+static/
+media/
+
+# Logs
+*.log
+
+# Configurations locales
+.env
