@@ -3,6 +3,9 @@
 import os
 import sys
 
+# ✅ PATCH SSL pour Python 3.11 + MongoDB Atlas
+import ssl_patch
+
 
 def main():
     """Run administrative tasks."""
