@@ -4,12 +4,18 @@ import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
 import { AuthProvider } from "./context/AuthContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
+import { NotificationsProvider } from "./context/NotificationsContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <FavoritesProvider>
+        <NotificationsProvider>
+          <RouterProvider router={router} />
+        </NotificationsProvider>
+      </FavoritesProvider>
     </AuthProvider>
   </React.StrictMode>
 );

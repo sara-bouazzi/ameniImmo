@@ -1,9 +1,12 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import NotificationBell from "./NotificationBell";
+import { FavoritesContext } from "../context/FavoritesContext";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const { favorites } = useContext(FavoritesContext);
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -65,8 +68,30 @@ function Navbar() {
                 </Link>
               )}
 
+              {/* Icons: Favoris et Notifications */}
+              <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-gray-200">
+                {/* Favoris */}
+                <Link
+                  to="/favoris"
+                  className="relative p-2 text-gray-600 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-full transition-colors"
+                  aria-label="Favoris"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  {favorites.length > 0 && (
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full min-w-[20px]">
+                      {favorites.length > 99 ? '99+' : favorites.length}
+                    </span>
+                  )}
+                </Link>
+
+                {/* Notifications */}
+                <NotificationBell />
+              </div>
+
               {/* Profil utilisateur */}
-              <div className="ml-4 flex items-center space-x-3 pl-4 border-l border-gray-200">
+              <div className="ml-2 flex items-center space-x-3 pl-4 border-l border-gray-200">
                 <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-lg">
                   <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold shadow-md">
                     {user.prenom?.[0]?.toUpperCase() || 'U'}

@@ -1,4 +1,5 @@
 import React from "react";
+import FavoriteButton from "./FavoriteButton";
 
 function formatPrice(value) {
   if (value == null) return "-";
@@ -11,6 +12,7 @@ function formatPrice(value) {
 
 function AnnonceCard({ annonce }) {
   const {
+    id,
     titre,
     description,
     prix,
@@ -35,6 +37,11 @@ function AnnonceCard({ annonce }) {
             </span>
           </div>
         )}
+
+        {/* Bouton Favori */}
+        <div className="absolute top-4 right-4">
+          <FavoriteButton annonceId={id} />
+        </div>
         
         {/* Icône centrale */}
         <div className="absolute inset-0 flex items-center justify-center">

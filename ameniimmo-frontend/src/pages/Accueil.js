@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import SearchBar from "../components/SearchBar";
+import Testimonials from "../components/Testimonials";
 
 function Accueil() {
   const { user } = useContext(AuthContext);
@@ -115,6 +117,11 @@ function Accueil() {
         </div>
       </div>
 
+      {/* Barre de recherche avancée */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SearchBar />
+      </div>
+
       {/* Catégories */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
@@ -210,6 +217,92 @@ function Accueil() {
           )}
         </div>
       </div>
+
+      {/* Témoignages Clients */}
+      <div className="bg-gray-50 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
+              Ce que disent <span className="gradient-text">nos clients</span>
+            </h2>
+            <p className="text-gray-600 text-lg">Témoignages de clients satisfaits</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Témoignage 1 */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-600 mb-6 italic">
+                "Service exceptionnel ! J'ai trouvé ma maison de rêve en moins d'un mois. L'équipe est très professionnelle et à l'écoute."
+              </p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  K
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-semibold text-gray-900">Karim Layouni</h4>
+                  <p className="text-sm text-gray-500">Acheteur - Tunis</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Témoignage 2 */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-600 mb-6 italic">
+                "Excellent accompagnement du début à la fin. La plateforme est intuitive et les annonces sont de qualité."
+              </p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  A
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-semibold text-gray-900">Afifa Lahiani</h4>
+                  <p className="text-sm text-gray-500">Propriétaire - Sousse</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Témoignage 3 */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="text-gray-600 mb-6 italic">
+                "Une expérience formidable ! Processus rapide et transparent. Je recommande vivement Ameni Immo."
+              </p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  M
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-semibold text-gray-900">Mohamed Ramzi</h4>
+                  <p className="text-sm text-gray-500">Locataire - Hammamet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section Témoignages avec Carousel */}
+      <Testimonials />
 
       {/* CTA */}
       <div className="bg-gradient-to-r from-primary-700 to-primary-600 text-white py-16">

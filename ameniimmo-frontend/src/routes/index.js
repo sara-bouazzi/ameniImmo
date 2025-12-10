@@ -7,6 +7,7 @@ import AdminDashboard from "../pages/AdminDashboard";
 import MesAnnonces from "../pages/MesAnnonces";
 import CreerAnnonce from "../pages/CreerAnnonce";
 import Accueil from "../pages/Accueil";
+import Favoris from "../pages/Favoris";
 import PrivateRoute from "./PrivateRoute";
 
 const router = createBrowserRouter([
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/annonces", element: <Annonces /> },
+      { path: "/favoris", element: <PrivateRoute><Favoris /></PrivateRoute> },
       { path: "/admin/dashboard", element: <PrivateRoute><AdminDashboard /></PrivateRoute> },
       { path: "/mes-annonces", element: <PrivateRoute><MesAnnonces /></PrivateRoute> },
       { path: "/annonces/creer", element: <PrivateRoute><CreerAnnonce /></PrivateRoute> },
