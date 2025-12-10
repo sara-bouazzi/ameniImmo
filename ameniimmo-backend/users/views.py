@@ -69,3 +69,10 @@ class UserProfileView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserListView(generics.ListAPIView):
+    """Endpoint pour lister tous les utilisateurs (pour statistiques)"""
+    queryset = Utilisateur.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)

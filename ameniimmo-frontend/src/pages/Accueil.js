@@ -1,21 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 function Accueil() {
+  const { user } = useContext(AuthContext);
   const [annonces, setAnnonces] = useState([]);
+  const [stats, setStats] = useState({
+    biensDisponibles: 0,
+    clientsSatisfaits: 0,
+    anneesExperience: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAnnonces();
+    fetchData();
   }, []);
 
-  const fetchAnnonces = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/annonces/");
-      // Afficher uniquement les annonces approuvées
-      const approuvees = response.data.filter((a) => a.approuve === true);
+      // Récupérer les annonces
+      const annoncesResponse = await axios.get("http://127.0.0.1:8000/api/annonces/");
+      const approuvees = annoncesResponse.data.filter((a) => a.approuve === true);
       setAnnonces(approuvees);
+
+      // Calculer les années d'expérience (depuis 2010)
+      const anneeDebut = 2010;
+      const anneeActuelle = new Date().getFullYear();
+      const experience = anneeActuelle - anneeDebut;
+
+      // Récupérer les utilisateurs pour compter les clients
+      let clientsCount = 2; // Valeur par défaut
+      try {
+        const usersResponse = await axios.get("http://127.0.0.1:8000/api/users/");
+        const clients = usersResponse.data.filter((u) => u.role === 'visiteur' || u.role === 'owner');
+        clientsCount = clients.length;
+      } catch (userError) {
+        console.log("Impossible de récupérer les utilisateurs, utilisation de la valeur par défaut");
+      }
+
+      setStats({
+        biensDisponibles: approuvees.length,
+        clientsSatisfaits: clientsCount,
+        anneesExperience: experience
+      });
+
       setLoading(false);
     } catch (error) {
       console.error("Erreur:", error);
@@ -23,214 +52,179 @@ function Accueil() {
     }
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('fr-TN', {
+      style: 'currency',
+      currency: 'TND',
+      minimumFractionDigits: 0
+    }).format(price);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold mb-4">Bienvenue sur AmeniImmo</h1>
-          <p className="text-xl mb-8">Trouvez votre bien immobilier idéal en Tunisie</p>
-          <div className="flex justify-center space-x-4">
-            <Link
-              to="/annonces"
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
-            >
-              Voir toutes les annonces
-            </Link>
-            <Link
-              to="/register"
-              className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
-            >
-              S'inscrire
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Annonces récentes */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Annonces récentes</h2>
-          <p className="text-gray-600">Les dernières offres disponibles</p>
+      <div className="relative bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-          </div>
-        ) : annonces.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">Aucune annonce disponible pour le moment</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {annonces.slice(0, 6).map((annonce) => (
-              <div
-                key={annonce.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-200"
-              >
-                {/* Image placeholder */}
-                <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                  <svg
-                    className="w-16 h-16 text-white opacity-50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                  </svg>
-                </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="text-center space-y-6">
+            <h1 className="text-5xl md:text-6xl font-display font-bold leading-tight">
+              Trouvez Votre
+              <span className="block">Bien Immobilier Idéal</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto font-light">
+              L'expertise immobilière en Tunisie - Votre partenaire de confiance
+            </p>
 
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{annonce.titre}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {annonce.description}
-                  </p>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      {annonce.ville}, {annonce.gouvernorat}
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                        />
-                      </svg>
-                      {annonce.surface} m²
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-blue-600">
-                      {annonce.prix?.toLocaleString()} TND
-                    </span>
-                    <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                      {annonce.statut}
-                    </span>
-                  </div>
-                </div>
+            {!user && (
+              <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <Link to="/annonces" className="btn-primary">
+                  Voir les annonces
+                </Link>
+                <Link to="/register" className="btn-secondary">
+                  S'inscrire
+                </Link>
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {annonces.length > 6 && (
-          <div className="text-center mt-8">
-            <Link
-              to="/annonces"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-            >
-              Voir toutes les annonces →
-            </Link>
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mt-16">
+              <div className="text-center">
+                <div className="text-4xl font-bold">{stats.biensDisponibles}+</div>
+                <div className="text-gray-200 mt-2">Biens disponibles</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold">{stats.clientsSatisfaits}+</div>
+                <div className="text-gray-200 mt-2">Clients satisfaits</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold">{stats.anneesExperience}+</div>
+                <div className="text-gray-200 mt-2">Années d'expérience</div>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" className="w-full">
+            <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="white"/>
+          </svg>
+        </div>
       </div>
 
-      {/* Fonctionnalités */}
-      <div className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Pourquoi choisir AmeniImmo ?
+      {/* Catégories */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
+            Nos <span className="gradient-text">Catégories</span>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Recherche facile</h3>
-              <p className="text-gray-600">
-                Trouvez rapidement le bien qui vous correspond
-              </p>
-            </div>
+          <p className="text-gray-600 text-lg">Découvrez notre large sélection de biens immobiliers</p>
+        </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Annonces vérifiées</h3>
-              <p className="text-gray-600">
-                Toutes les annonces sont approuvées par nos administrateurs
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { icon: "🏠", title: "Appartements", count: "120+" },
+            { icon: "🏡", title: "Maisons", count: "85+" },
+            { icon: "🏢", title: "Locaux commerciaux", count: "45+" },
+            { icon: "🏞️", title: "Terrains", count: "60+" }
+          ].map((cat, idx) => (
+            <div key={idx} className="card p-6 text-center group cursor-pointer transform hover:-translate-y-2">
+              <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform">{cat.icon}</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">{cat.title}</h3>
+              <p className="text-primary-600 font-semibold">{cat.count} biens</p>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <div className="text-center">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="w-8 h-8 text-indigo-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Disponibilité 24/7</h3>
-              <p className="text-gray-600">
-                Accédez aux annonces à tout moment, où que vous soyez
-              </p>
+      {/* Annonces */}
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-end mb-12">
+            <div>
+              <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
+                Annonces <span className="gradient-text">Récentes</span>
+              </h2>
+              <p className="text-gray-600 text-lg">Les dernières offres disponibles</p>
             </div>
+            <Link to="/annonces" className="hidden md:inline-flex items-center text-primary-700 font-semibold hover:text-primary-800 transition-colors group">
+              Voir tout
+              <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-200"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-700 border-t-transparent absolute top-0"></div>
+              </div>
+            </div>
+          ) : annonces.length === 0 ? (
+            <div className="text-center py-20 card">
+              <p className="text-gray-600 text-xl font-medium">Aucune annonce disponible</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {annonces.slice(0, 6).map((annonce) => (
+                <div key={annonce.id} className="card group cursor-pointer transform hover:-translate-y-2">
+                  <div className="relative h-56 bg-gradient-to-br from-primary-400 to-primary-600 overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <svg className="w-20 h-20 text-white opacity-30" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-1 group-hover:text-primary-700 transition-colors">
+                      {annonce.titre}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {annonce.description}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">Prix</p>
+                        <p className="text-2xl font-bold gradient-text">
+                          {formatPrice(annonce.prix)}
+                        </p>
+                      </div>
+                      <button className="bg-primary-700 text-white p-3 rounded-lg hover:shadow-glow transition-all">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="bg-gradient-to-r from-primary-700 to-primary-600 text-white py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-display font-bold mb-4">Prêt à trouver votre bien idéal ?</h2>
+          <p className="text-xl mb-8 text-gray-100">
+            Rejoignez des centaines de clients satisfaits
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link to="/annonces" className="btn-secondary">
+              Parcourir les annonces
+            </Link>
+            <Link to="/register" className="bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-lg">
+              Créer un compte
+            </Link>
           </div>
         </div>
       </div>
