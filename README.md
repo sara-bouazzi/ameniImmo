@@ -58,22 +58,6 @@ Utilisez la page d'inscription : http://localhost:3000/register
 
 ---
 
-## 🗄️ Base de Données
-
-### MongoDB Atlas
-- **Type** : MongoDB Atlas (Cloud)
-- **Connection** : Définie dans `.env` (backend)
-
-**Créer le fichier `.env` dans `ameniimmo-backend/` :**
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?appName=<appname>
-MONGODB_DB_NAME=<database_name>
-```
-
-⚠️ **Important** : Remplacez les valeurs avec vos propres credentials MongoDB Atlas
-
----
-
 ## 📦 Installation (Première fois)
 
 ### Backend
@@ -140,74 +124,6 @@ npm install
 
 ---
 
-## 📂 Structure de la Base de Données
-
-### Collections MongoDB
-
-**users_utilisateur**
-```javascript
-{
-  _id: ObjectId,
-  username: String,
-  email: String,
-  password: String (hashed),
-  role: String, // "admin", "owner", "visiteur"
-  telephone: String,
-  adresse: String,
-  dateNaissance: Date,
-  genre: String,
-  photo: String
-}
-```
-
-**annonces_immobilier**
-```javascript
-{
-  _id: ObjectId,
-  titre: String,
-  description: String,
-  prix: Float,
-  surface: Float,
-  region: String,
-  ville: String,
-  gouvernorat: String,
-  fonctionnalite: String,
-  statut: String, // "à louer", "à vendre"
-  approuve: Boolean, // false par défaut
-  proprietaire: ObjectId, // Référence vers Utilisateur
-  datePublication: Date,
-  type_bien: String // "Logement", "Terrain", etc.
-}
-```
-
----
-
-## 🔧 API Endpoints
-
-### Authentification
-```
-POST   /api/auth/register/       # Inscription
-POST   /api/auth/login/          # Connexion
-GET    /api/auth/profile/        # Profil utilisateur (auth requise)
-POST   /api/auth/token/refresh/  # Rafraîchir le token
-```
-
-### Annonces
-```
-GET    /api/annonces/            # Liste toutes les annonces
-POST   /api/annonces/            # Créer une annonce (auth requise)
-GET    /api/annonces/{id}/       # Détail d'une annonce
-PATCH  /api/annonces/{id}/       # Modifier une annonce (admin)
-DELETE /api/annonces/{id}/       # Supprimer une annonce (admin/propriétaire)
-```
-
-### Admin Django
-```
-http://127.0.0.1:8000/admin/
-```
-
----
-
 ## 🛠️ Commandes Utiles
 
 ### Backend
@@ -240,78 +156,6 @@ npm install
 ```powershell
 npm run build
 ```
-
----
-
-## ⚠️ Problèmes Connus
-
-### 1. Djongo et Filtres BooleanField
-**Problème** : `Immobilier.objects.filter(approuve=True)` génère une erreur SQL.  
-**Solution** : Utiliser `.all()` et filtrer en JavaScript côté frontend.
-
-### 2. Migrations Djongo
-**Problème** : Les migrations ALTER TABLE échouent.  
-**Solution** : Toujours utiliser `python manage.py migrate --fake`.
-
-### 3. Port déjà utilisé (Backend)
-**Problème** : "Address already in use" sur le port 8000.  
-**Solution** :
-```powershell
-Get-Process -Name python | Stop-Process -Force
-```
-
-### 4. MongoDB Atlas Timeout
-**Problème** : Connexion lente ou timeout.  
-**Solution** : Vérifier l'IP whitelisting (0.0.0.0/0) dans MongoDB Atlas.
-
----
-
-## 🎨 Design & UI
-
-- **Framework CSS** : TailwindCSS 3
-- **Icônes** : SVG inline
-- **Thème** : Gradient bleu/indigo
-- **Responsive** : Mobile-first design
-
----
-
-## 📝 TODO / Fonctionnalités Futures
-
-- [ ] Upload d'images pour les annonces
-- [ ] Système de favoris pour les visiteurs
-- [ ] Demandes de visite avec calendrier
-- [ ] Filtres de recherche avancés (prix, surface, ville)
-- [ ] Pagination des annonces
-- [ ] Notifications en temps réel
-- [ ] Tableau de bord propriétaire (statistiques)
-- [ ] Messagerie entre visiteurs et propriétaires
-- [ ] Géolocalisation avec carte interactive
-
----
-
-## 📞 Support
-
-Pour toute question ou problème :
-1. Vérifier que MongoDB Atlas est accessible
-2. Vérifier que les deux serveurs (backend + frontend) sont lancés
-3. Consulter les logs dans les terminaux
-4. Vérifier le fichier `.env` pour les credentials MongoDB
-
----
-
-## 🔐 Sécurité
-
-- ⚠️ **NE JAMAIS** commiter le fichier `.env` sur GitHub
-- ✅ `.env` est dans `.gitignore`
-- ✅ Mots de passe hashés avec Django (PBKDF2)
-- ✅ JWT pour l'authentification
-- ✅ CORS configuré pour le développement
-
----
-
-## 📄 Licence
-
-Projet universitaire - Tous droits réservés
 
 ---
 
