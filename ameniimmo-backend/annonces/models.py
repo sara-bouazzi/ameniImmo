@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Immobilier(models.Model):
     titre = models.CharField(max_length=200)
@@ -11,7 +12,14 @@ class Immobilier(models.Model):
     fonctionnalite = models.CharField(max_length=200)
     datePublication = models.DateField(auto_now_add=True)
     statut = models.CharField(max_length=50)
-    approuve = models.BooleanField(default=False)  # ✅ Champ ajouté
+    approuve = models.BooleanField(default=False)
+    proprietaire = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='annonces'
+    )
 
     def __str__(self):
         return self.titre
