@@ -201,10 +201,10 @@ function Annonces() {
 
         {/* Contenu principal */}
         {!loading && !error && (
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Sidebar Filtres */}
-            <div className={`md:w-80 ${showFilters ? 'block' : 'hidden md:block'}`}>
-              <div className="bg-white rounded-xl shadow-lg p-6 sticky top-4">
+          <div className="space-y-6">
+            {/* Filtres en haut */}
+            <div className={`${showFilters ? 'block' : 'hidden md:block'}`}>
+              <div className="bg-white rounded-xl shadow-lg p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold text-gray-900">Filtres</h3>
                   <button
@@ -215,7 +215,7 @@ function Annonces() {
                   </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Statut */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -272,14 +272,14 @@ function Annonces() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Prix (TND)
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex gap-2">
                       <input
                         type="number"
                         name="prixMin"
                         value={filters.prixMin}
                         onChange={handleFilterChange}
                         placeholder="Min"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                       />
                       <input
                         type="number"
@@ -287,7 +287,7 @@ function Annonces() {
                         value={filters.prixMax}
                         onChange={handleFilterChange}
                         placeholder="Max"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                       />
                     </div>
                   </div>
@@ -297,14 +297,14 @@ function Annonces() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Superficie (m²)
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex gap-2">
                       <input
                         type="number"
                         name="superficieMin"
                         value={filters.superficieMin}
                         onChange={handleFilterChange}
                         placeholder="Min"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                       />
                       <input
                         type="number"
@@ -312,47 +312,9 @@ function Annonces() {
                         value={filters.superficieMax}
                         onChange={handleFilterChange}
                         placeholder="Max"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                       />
                     </div>
-                  </div>
-
-                  {/* Chambres */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Chambres
-                    </label>
-                    <select
-                      name="chambres"
-                      value={filters.chambres}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    >
-                      <option value="">Toutes</option>
-                      <option value="1">1+</option>
-                      <option value="2">2+</option>
-                      <option value="3">3+</option>
-                      <option value="4">4+</option>
-                      <option value="5">5+</option>
-                    </select>
-                  </div>
-
-                  {/* Salles de bain */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Salles de bain
-                    </label>
-                    <select
-                      name="sallesBain"
-                      value={filters.sallesBain}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    >
-                      <option value="">Toutes</option>
-                      <option value="1">1+</option>
-                      <option value="2">2+</option>
-                      <option value="3">3+</option>
-                    </select>
                   </div>
 
                   {/* Tri */}
@@ -377,7 +339,7 @@ function Annonces() {
             </div>
 
             {/* Zone de contenu */}
-            <div className="flex-1">
+            <div>
               {showMap ? (
                 <MapView annonces={filteredAnnonces} />
               ) : (

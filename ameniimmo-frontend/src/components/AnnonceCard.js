@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import FavoriteButton from "./FavoriteButton";
 
 function formatPrice(value) {
@@ -11,6 +13,8 @@ function formatPrice(value) {
 }
 
 function AnnonceCard({ annonce }) {
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const {
     id,
     titre,
@@ -22,8 +26,16 @@ function AnnonceCard({ annonce }) {
     fonctionnalite,
   } = annonce;
 
+  const handleDetailsClick = (e) => {
+    e.stopPropagation();
+    navigate(`/annonces/${id}`);
+  };
+
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+    <div 
+      className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
+      onClick={() => navigate(`/annonces/${id}`)}
+    >
       {/* Image avec gradient coloré */}
       <div className="relative h-52 bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-700 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -38,10 +50,12 @@ function AnnonceCard({ annonce }) {
           </div>
         )}
 
-        {/* Bouton Favori */}
-        <div className="absolute top-4 right-4">
-          <FavoriteButton annonceId={id} />
-        </div>
+        {/* Bouton Favori - uniquement pour les visiteurs */}
+        {user && user.role === "visiteur" && (
+          <div className="absolute top-4 right-4">
+            <FavoriteButton annonceId={id} />
+          </div>
+        )}
         
         {/* Icône centrale */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -87,16 +101,19 @@ function AnnonceCard({ annonce }) {
         </div>
 
         {/* Fonctionnalités et bouton */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           {fonctionnalite && (
-            <div className="flex-1 mr-3">
+            <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-500 truncate" title={fonctionnalite}>
                 {fonctionnalite}
               </p>
             </div>
           )}
           
-          <button className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-primary-700 to-primary-600 hover:from-primary-800 hover:to-primary-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
+          <button 
+            onClick={handleDetailsClick}
+            className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-primary-700 to-primary-600 hover:from-primary-800 hover:to-primary-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 whitespace-nowrap"
+          >
             Détails
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

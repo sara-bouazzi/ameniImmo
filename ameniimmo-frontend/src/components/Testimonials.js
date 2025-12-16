@@ -6,43 +6,48 @@ function Testimonials() {
   const testimonials = [
     {
       id: 1,
-      name: "Ahmed Ben Salem",
-      role: "Propriétaire",
-      image: "👨‍💼",
-      text: "Une expérience exceptionnelle ! L'équipe d'AmeniImmo a été très professionnelle et m'a aidé à vendre ma villa en seulement 2 semaines. Je recommande vivement leurs services.",
-      rating: 5
+      name: "Manel Khalsi",
+      role: "Cliente",
+      image: "👩‍💼",
+      text: "Équipe professionnelle toujours disponible et à l'écoute, je recommande les yeux fermés.. Bonne continuation pour vous",
+      rating: 5,
+      date: "12 janvier 2021"
     },
     {
       id: 2,
-      name: "Leila Mansouri",
-      role: "Cliente satisfaite",
-      image: "👩‍💼",
-      text: "J'ai trouvé l'appartement de mes rêves grâce à AmeniImmo. Le processus était simple et transparent. L'équipe a été à l'écoute de mes besoins et m'a accompagné jusqu'à la signature.",
-      rating: 5
+      name: "Mar Yem",
+      role: "Cliente",
+      image: "👩",
+      text: "Agence Ameni Immo équipe très efficace et très professionnel. A recommander les yeux fermés ❤️❤️❤️",
+      rating: 5,
+      date: "28 juillet 2017"
     },
     {
       id: 3,
-      name: "Mehdi Trabelsi",
-      role: "Investisseur",
-      image: "👔",
-      text: "Plateforme très professionnelle avec une grande variété de biens. Le service client est réactif et les conseillers connaissent parfaitement le marché immobilier tunisien.",
-      rating: 5
+      name: "Imen Rais",
+      role: "Cliente satisfaite",
+      image: "👩‍💼",
+      text: "Service client très professionnel et personnel accueillant. Très satisfaite de mon expérience avec l'agence.",
+      rating: 5,
+      date: "23 mai 2017"
     },
     {
       id: 4,
-      name: "Fatma Khaled",
-      role: "Locataire",
-      image: "👩",
-      text: "Grâce à AmeniImmo, j'ai pu louer un magnifique appartement au centre-ville. La recherche était facile avec les filtres avancés et j'ai été contactée rapidement.",
-      rating: 5
+      name: "Oussema Ameni",
+      role: "Client",
+      image: "👨‍💼",
+      text: "تعاملت مع أماني العقارية وماندمتش خاطر الي يقول ameni immo يقول الثقة ويقول المصداقية والنصيحة ويها المناسبة نحب نشكر العاملين الكل فيها وعلى رأسهم سي محمد 👌👌 bravo et bon courage",
+      rating: 5,
+      date: "29 mai 2018"
     },
     {
       id: 5,
-      name: "Karim Bouazizi",
-      role: "Agent immobilier",
-      image: "🧑‍💼",
-      text: "En tant qu'agent, cette plateforme m'a permis d'atteindre plus de clients et de conclure davantage de transactions. Les outils sont excellents et l'interface est intuitive.",
-      rating: 5
+      name: "Abdessalem Khelifi",
+      role: "Client",
+      image: "👨",
+      text: "Recommande AMENI iMo",
+      rating: 5,
+      date: "14 juin 2017"
     }
   ];
 
@@ -165,19 +170,19 @@ function Testimonials() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-700 mb-2">98%</div>
+            <div className="text-4xl font-bold text-primary-700 mb-2">90%</div>
             <div className="text-gray-600">Clients satisfaits</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-700 mb-2">500+</div>
-            <div className="text-gray-600">Transactions réussies</div>
+            <div className="text-4xl font-bold text-primary-700 mb-2">22</div>
+            <div className="text-gray-600">Avis vérifiés</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-700 mb-2">4.9/5</div>
+            <div className="text-4xl font-bold text-primary-700 mb-2">4.5/5</div>
             <div className="text-gray-600">Note moyenne</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-primary-700 mb-2">15+</div>
+            <div className="text-4xl font-bold text-primary-700 mb-2">10+</div>
             <div className="text-gray-600">Années d'expérience</div>
           </div>
         </div>

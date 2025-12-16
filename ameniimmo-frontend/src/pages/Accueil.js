@@ -4,6 +4,8 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import SearchBar from "../components/SearchBar";
 import Testimonials from "../components/Testimonials";
+import AnnonceCard from "../components/AnnonceCard";
+import MapView from "../components/MapView";
 
 function Accueil() {
   const { user } = useContext(AuthContext);
@@ -52,14 +54,6 @@ function Accueil() {
       console.error("Erreur:", error);
       setLoading(false);
     }
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('fr-TN', {
-      style: 'currency',
-      currency: 'TND',
-      minimumFractionDigits: 0
-    }).format(price);
   };
 
   return (
@@ -179,148 +173,52 @@ function Accueil() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {annonces.slice(0, 6).map((annonce) => (
-                <div key={annonce.id} className="card group cursor-pointer transform hover:-translate-y-2">
-                  <div className="relative h-56 bg-gradient-to-br from-primary-400 to-primary-600 overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <svg className="w-20 h-20 text-white opacity-30" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-1 group-hover:text-primary-700 transition-colors">
-                      {annonce.titre}
-                    </h3>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {annonce.description}
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">Prix</p>
-                        <p className="text-2xl font-bold gradient-text">
-                          {formatPrice(annonce.prix)}
-                        </p>
-                      </div>
-                      <button className="bg-primary-700 text-white p-3 rounded-lg hover:shadow-glow transition-all">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <AnnonceCard key={annonce.id} annonce={annonce} />
               ))}
             </div>
           )}
         </div>
       </div>
 
-      {/* Témoignages Clients */}
-      <div className="bg-gray-50 py-20">
+      {/* Section Carte Interactive */}
+      <div className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
-              Ce que disent <span className="gradient-text">nos clients</span>
+              Explorez <span className="gradient-text">sur la Carte</span>
             </h2>
-            <p className="text-gray-600 text-lg">Témoignages de clients satisfaits</p>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Découvrez la localisation de tous nos biens disponibles en Tunisie
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Témoignage 1 */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 italic">
-                "Service exceptionnel ! J'ai trouvé ma maison de rêve en moins d'un mois. L'équipe est très professionnelle et à l'écoute."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  K
-                </div>
-                <div className="ml-4">
-                  <h4 className="font-semibold text-gray-900">Karim Layouni</h4>
-                  <p className="text-sm text-gray-500">Acheteur - Tunis</p>
-                </div>
-              </div>
+          {/* Carte avec annonces */}
+          {annonces.length > 0 && (
+            <div className="transform hover:scale-[1.01] transition-transform duration-300">
+              <MapView annonces={annonces} />
             </div>
+          )}
 
-            {/* Témoignage 2 */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 italic">
-                "Excellent accompagnement du début à la fin. La plateforme est intuitive et les annonces sont de qualité."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  A
-                </div>
-                <div className="ml-4">
-                  <h4 className="font-semibold text-gray-900">Afifa Lahiani</h4>
-                  <p className="text-sm text-gray-500">Propriétaire - Sousse</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Témoignage 3 */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 italic">
-                "Une expérience formidable ! Processus rapide et transparent. Je recommande vivement Ameni Immo."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  M
-                </div>
-                <div className="ml-4">
-                  <h4 className="font-semibold text-gray-900">Mohamed Ramzi</h4>
-                  <p className="text-sm text-gray-500">Locataire - Hammamet</p>
-                </div>
-              </div>
-            </div>
+          {/* Bouton pour voir toutes les annonces */}
+          <div className="text-center mt-8">
+            <Link 
+              to="/annonces" 
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-700 to-primary-600 hover:from-primary-800 hover:to-primary-700 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            >
+              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Explorer toutes les annonces
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Section Témoignages avec Carousel */}
       <Testimonials />
-
-      {/* CTA */}
-      <div className="bg-gradient-to-r from-primary-700 to-primary-600 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-display font-bold mb-4">Prêt à trouver votre bien idéal ?</h2>
-          <p className="text-xl mb-8 text-gray-100">
-            Rejoignez des centaines de clients satisfaits
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link to="/annonces" className="btn-secondary">
-              Parcourir les annonces
-            </Link>
-            <Link to="/register" className="bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-lg">
-              Créer un compte
-            </Link>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

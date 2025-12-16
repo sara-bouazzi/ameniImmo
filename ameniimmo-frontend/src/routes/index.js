@@ -3,6 +3,7 @@ import App from "../App";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Annonces from "../pages/Annonces";
+import AnnonceDetail from "../pages/AnnonceDetail";
 import AdminDashboard from "../pages/AdminDashboard";
 import MesAnnonces from "../pages/MesAnnonces";
 import CreerAnnonce from "../pages/CreerAnnonce";
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/annonces", element: <Annonces /> },
+      { path: "/annonces/:id", element: <AnnonceDetail /> },
       { path: "/favoris", element: <PrivateRoute><Favoris /></PrivateRoute> },
       { path: "/admin/dashboard", element: <PrivateRoute><AdminDashboard /></PrivateRoute> },
       { path: "/mes-annonces", element: <PrivateRoute><MesAnnonces /></PrivateRoute> },
