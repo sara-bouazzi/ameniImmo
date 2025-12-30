@@ -152,10 +152,12 @@ REST_FRAMEWORK = {
 }
 
 # ✅ CORS configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://*.vercel.app",  # ✅ Autorise tous les sous-domaines Vercel
-]
+CORS_ALLOW_ALL_ORIGINS = True  # Pour déploiement rapide
+# Alternative sécurisée : liste les domaines exacts
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "https://ameni-immo.vercel.app",
+# ]
 CORS_ALLOW_CREDENTIALS = True
 
 # ✅ Authentification : utilisation du modèle Utilisateur personnalisé
