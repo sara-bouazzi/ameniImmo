@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ Pour servir les fichiers statiques
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     # ✅ CORS pour autoriser le frontend
@@ -127,7 +128,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # ✅ Pour la production
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # ✅ Optimisation
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
@@ -148,18 +151,12 @@ REST_FRAMEWORK = {
     ]
 }
 
-# ✅ CORS configuration (autorise ton frontend Angular/React)
-CORS_ALLOW_ALL_ORIGINS = True
-
-
-#######################################################################################
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  # ✅ crée ce dossier manuellement
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+# ✅ CORS configuration
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://*.vercel.app",  # ✅ Autorise tous les sous-domaines Vercel
+]
+CORS_ALLOW_CREDENTIALS = True
 
 # ✅ Authentification : utilisation du modèle Utilisateur personnalisé
 AUTH_USER_MODEL = 'users.Utilisateur'
