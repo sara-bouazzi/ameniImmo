@@ -23,8 +23,10 @@ function Accueil() {
 
   const fetchData = async () => {
     try {
+      const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+      
       // Récupérer les annonces
-      const annoncesResponse = await axios.get("http://127.0.0.1:8000/api/annonces/");
+      const annoncesResponse = await axios.get(`${API_URL}/api/annonces/`);
       const approuvees = annoncesResponse.data.filter((a) => a.approuve === true);
       setAnnonces(approuvees);
 
