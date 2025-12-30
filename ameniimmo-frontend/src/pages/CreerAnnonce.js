@@ -34,8 +34,9 @@ function CreerAnnonce() {
     setLoading(true);
 
     try {
+      const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
       await axios.post(
-        "http://127.0.0.1:8000/api/annonces/",
+        `${API_URL}/api/annonces/`,
         {
           ...formData,
           prix: parseFloat(formData.prix),

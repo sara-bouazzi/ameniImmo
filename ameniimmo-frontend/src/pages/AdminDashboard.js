@@ -45,8 +45,9 @@ function AdminDashboard() {
 
   const handleApprove = async (id) => {
     try {
+      const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
       await axios.patch(
-        `http://127.0.0.1:8000/api/annonces/${id}/`,
+        `${API_URL}/api/annonces/${id}/`,
         { approuve: true },
         {
           headers: {
@@ -68,7 +69,8 @@ function AdminDashboard() {
       return;
     }
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/annonces/${id}/`, {
+      const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+      await axios.delete(`${API_URL}/api/annonces/${id}/`, {
         headers: {
           Authorization: `Bearer ${authTokens?.access}`,
         },
