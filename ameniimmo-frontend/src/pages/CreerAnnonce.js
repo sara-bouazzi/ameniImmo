@@ -18,6 +18,8 @@ function CreerAnnonce() {
     statut: "à louer",
     type_bien: "Immobilier", // Type de bien
   });
+  const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,6 +30,22 @@ function CreerAnnonce() {
     });
   };
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+
+    // Créer les aperçus des images
+    const previews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+  };
+
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    setImages(newImages);
+    setImagePreviews(newPreviews);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -35,7 +53,9 @@ function CreerAnnonce() {
 
     try {
       const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
-      await axios.post(
+      
+      // Créer l'annonce
+      const response = await axios.post(
         `${API_URL}/api/annonces/`,
         {
           ...formData,
@@ -50,6 +70,28 @@ function CreerAnnonce() {
           },
         }
       );
+
+      // Upload des images si présentes
+      if (images.length > 0) {
+        const annonceId = response.data.id;
+        const imageFormData = new FormData();
+        
+        images.forEach((image) => {
+          imageFormData.append('images', image);
+        });
+
+        await axios.post(
+          `${API_URL}/api/annonces/${annonceId}/upload_images/`,
+          imageFormData,
+          {
+            headers: {
+              Authorization: `Bearer ${authTokens?.access}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
+
       // Redirection vers "Mes Annonces"
       navigate("/mes-annonces");
     } catch (err) {
@@ -309,6 +351,56 @@ function CreerAnnonce() {
                   <option value="à vendre">À vendre</option>
                 </select>
               </div>
+            </div>
+
+            {/* Upload d'images */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Images du bien
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary-500 transition-colors">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label htmlFor="image-upload" className="cursor-pointer">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p className="mt-2 text-sm text-gray-600">
+                    <span className="font-semibold text-primary-600">Cliquez pour ajouter des images</span> ou glissez-déposez
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG jusqu'à 10MB</p>
+                </label>
+              </div>
+
+              {/* Aperçu des images */}
+              {imagePreviews.length > 0 && (
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={preview}
+                        alt={`Aperçu ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Message d'erreur */}

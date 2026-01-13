@@ -11,6 +11,7 @@ function AnnonceDetail() {
   const [annonce, setAnnonce] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     fetchAnnonce();
@@ -35,6 +36,18 @@ function AnnonceDetail() {
       return Number(value).toLocaleString("fr-FR");
     } catch {
       return value;
+    }
+  };
+
+  const nextImage = () => {
+    if (annonce?.images && annonce.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % annonce.images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (annonce?.images && annonce.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + annonce.images.length) % annonce.images.length);
     }
   };
 
@@ -85,17 +98,63 @@ function AnnonceDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Colonne principale */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Image */}
+            {/* Images carousel */}
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-gray-100">
               <div className="relative h-96 bg-gradient-to-br from-primary-500 to-primary-700 overflow-hidden">
-                <div className="absolute inset-0 bg-black/10"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-full p-8">
-                    <svg className="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                    </svg>
+                {annonce.images && annonce.images.length > 0 ? (
+                  <>
+                    {/* Image principale */}
+                    <img
+                      src={`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'}${annonce.images[currentImageIndex].image.startsWith('/') ? '' : '/'}${annonce.images[currentImageIndex].image}`}
+                      alt={annonce.titre}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                    
+                    {/* Boutons de navigation */}
+                    {annonce.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all"
+                        >
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                        
+                        {/* Indicateur d'images */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                          {annonce.images.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentImageIndex(index)}
+                              className={`w-2 h-2 rounded-full transition-all ${
+                                index === currentImageIndex ? 'bg-white w-8' : 'bg-white/50'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-full p-8">
+                      <svg className="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
+                )}
                 
                 {/* Badge statut */}
                 {annonce.statut && (
@@ -113,6 +172,30 @@ function AnnonceDetail() {
                   </div>
                 )}
               </div>
+              
+              {/* Miniatures */}
+              {annonce.images && annonce.images.length > 1 && (
+                <div className="p-4 bg-gray-50">
+                  <div className="flex gap-2 overflow-x-auto">
+                    {annonce.images.map((img, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                          index === currentImageIndex ? 'border-primary-600' : 'border-transparent opacity-60 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'}${img.image.startsWith('/') ? '' : '/'}${img.image}`}
+                          alt={`Miniature ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Détails */}

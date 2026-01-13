@@ -38,8 +38,43 @@ function AnnonceCard({ annonce }) {
     >
       {/* Image avec gradient coloré */}
       <div className="relative h-52 bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-700 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0 group-hover:bg-black/30 transition-colors duration-300"></div>
+        {annonce.images && annonce.images.length > 0 ? (
+          <>
+            <img
+              src={`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'}${annonce.images[0].image.startsWith('/') ? '' : '/'}${annonce.images[0].image}`}
+              alt={titre}
+              className="w-full h-full object-cover"
+              onError={(e) => { e.target.onerror = null; e.target.src = ''; e.target.style.display = 'none'; }}
+            />
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-300"></div>
+            
+            {/* Badge nombre d'images */}
+            {annonce.images.length > 1 && (
+              <div className="absolute bottom-4 left-4">
+                <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold bg-black/50 text-white backdrop-blur-sm">
+                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {annonce.images.length}
+                </span>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-black/20"></div>
+            <div className="absolute inset-0 group-hover:bg-black/30 transition-colors duration-300"></div>
+            
+            {/* Icône centrale */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
+                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+              </div>
+            </div>
+          </>
+        )}
         
         {/* Badge statut */}
         {statut && (
@@ -56,15 +91,6 @@ function AnnonceCard({ annonce }) {
             <FavoriteButton annonceId={id} />
           </div>
         )}
-        
-        {/* Icône centrale */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="bg-white/10 backdrop-blur-sm rounded-full p-4">
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-          </div>
-        </div>
       </div>
 
       {/* Contenu */}

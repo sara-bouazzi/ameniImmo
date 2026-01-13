@@ -25,6 +25,25 @@ class Immobilier(models.Model):
         return self.titre
 
 
+class ImageImmobilier(models.Model):
+    """Modèle pour stocker plusieurs images par annonce"""
+    immobilier = models.ForeignKey(
+        Immobilier,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+    image = models.ImageField(upload_to='photos/')
+    description = models.CharField(max_length=200, blank=True, null=True)
+    ordre = models.IntegerField(default=0)
+    date_ajout = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['ordre', 'date_ajout']
+
+    def __str__(self):
+        return f"Image {self.ordre} - {self.immobilier.titre}"
+
+
 class Visite(models.Model):
     immobilier = models.ForeignKey(Immobilier, on_delete=models.CASCADE)
     visiteurId = models.IntegerField()

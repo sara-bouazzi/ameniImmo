@@ -160,5 +160,16 @@ CORS_ALLOW_ALL_ORIGINS = True  # Pour déploiement rapide
 # ]
 CORS_ALLOW_CREDENTIALS = True
 
+# ✅ JWT Configuration
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=5),  # Token valide 5 heures
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Refresh token valide 7 jours
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+}
+
 # ✅ Authentification : utilisation du modèle Utilisateur personnalisé
 AUTH_USER_MODEL = 'users.Utilisateur'
