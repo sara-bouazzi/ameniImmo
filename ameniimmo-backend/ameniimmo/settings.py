@@ -8,6 +8,7 @@ from pathlib import Path
 from decouple import config
 import ssl
 import certifi
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # ✅ Apps externes
+    'cloudinary_storage',
+    'cloudinary',
     'rest_framework',
     'corsheaders',
 
@@ -131,6 +134,23 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # ✅ Pour la production
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # ✅ Optimisation
+
+# ✅ Configuration Cloudinary pour le stockage des images
+cloudinary.config(
+    cloud_name = config('CLOUDINARY_CLOUD_NAME', default=''),
+    api_key = config('CLOUDINARY_API_KEY', default=''),
+    api_secret = config('CLOUDINARY_API_SECRET', default=''),
+    secure = True
+)
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
+    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+}
+
+# Utiliser Cloudinary pour les media files
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"

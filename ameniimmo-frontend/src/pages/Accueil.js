@@ -10,6 +10,8 @@ import MapView from "../components/MapView";
 function Accueil() {
   const { user } = useContext(AuthContext);
   const [annonces, setAnnonces] = useState([]);
+  const [filteredAnnonces, setFilteredAnnonces] = useState([]);
+  const [searchActive, setSearchActive] = useState(false);
   const [stats, setStats] = useState({
     biensDisponibles: 0,
     clientsSatisfaits: 0,
@@ -29,6 +31,7 @@ function Accueil() {
       const annoncesResponse = await axios.get(`${API_URL}/api/annonces/`);
       const approuvees = annoncesResponse.data.filter((a) => a.approuve === true);
       setAnnonces(approuvees);
+      setFilteredAnnonces(approuvees);
 
       // Calculer les années d'expérience (depuis 2010)
       const anneeDebut = 2010;
@@ -56,6 +59,58 @@ function Accueil() {
       console.error("Erreur:", error);
       setLoading(false);
     }
+  };
+
+  const handleSearch = (searchParams) => {
+    let filtered = [...annonces];
+
+    // Filtre par statut
+    if (searchParams.statut) {
+      const filterStatut = searchParams.statut === 'vente' ? 'à vendre' : searchParams.statut === 'location' ? 'à louer' : searchParams.statut;
+      filtered = filtered.filter(a => {
+        const annonceStatut = a.statut ? a.statut.toLowerCase().trim() : '';
+        return annonceStatut.includes(filterStatut.toLowerCase());
+      });
+    }
+
+    // Filtre par ville
+    if (searchParams.ville) {
+      const searchTerm = searchParams.ville.toLowerCase();
+      filtered = filtered.filter(a => 
+        (a.ville && a.ville.toLowerCase().includes(searchTerm)) ||
+        (a.region && a.region.toLowerCase().includes(searchTerm)) ||
+        (a.gouvernorat && a.gouvernorat.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Filtre par prix
+    if (searchParams.prixMin) {
+      filtered = filtered.filter(a => a.prix >= parseFloat(searchParams.prixMin));
+    }
+    if (searchParams.prixMax) {
+      filtered = filtered.filter(a => a.prix <= parseFloat(searchParams.prixMax));
+    }
+
+    // Filtre par superficie
+    if (searchParams.superficieMin) {
+      filtered = filtered.filter(a => (a.surface || a.superficie) >= parseFloat(searchParams.superficieMin));
+    }
+    if (searchParams.superficieMax) {
+      filtered = filtered.filter(a => (a.surface || a.superficie) <= parseFloat(searchParams.superficieMax));
+    }
+
+    setFilteredAnnonces(filtered);
+    setSearchActive(true);
+    
+    // Scroll vers les résultats
+    setTimeout(() => {
+      document.getElementById('resultats-recherche')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const resetSearch = () => {
+    setFilteredAnnonces(annonces);
+    setSearchActive(false);
   };
 
   return (
@@ -115,36 +170,106 @@ function Accueil() {
 
       {/* Barre de recherche avancée */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SearchBar />
+        <SearchBar onSearch={handleSearch} />
       </div>
 
-      {/* Catégories */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
-            Nos <span className="gradient-text">Catégories</span>
-          </h2>
-          <p className="text-gray-600 text-lg">Découvrez notre large sélection de biens immobiliers</p>
-        </div>
+      {/* Résultats de recherche */}
+      {searchActive && (
+        <div id="resultats-recherche" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">
+              Résultats de recherche
+              <span className="text-primary-600 ml-3">({filteredAnnonces.length})</span>
+            </h2>
+            <button
+              onClick={resetSearch}
+              className="flex items-center gap-2 text-primary-700 hover:text-primary-800 font-medium transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Réinitialiser
+            </button>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[
-            { icon: "🏠", title: "Appartements", count: "120+" },
-            { icon: "🏡", title: "Maisons", count: "85+" },
-            { icon: "🏢", title: "Locaux commerciaux", count: "45+" },
-            { icon: "🏞️", title: "Terrains", count: "60+" }
-          ].map((cat, idx) => (
-            <div key={idx} className="card p-6 text-center group cursor-pointer transform hover:-translate-y-2">
-              <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform">{cat.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{cat.title}</h3>
-              <p className="text-primary-600 font-semibold">{cat.count} biens</p>
+          {filteredAnnonces.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-xl shadow-sm">
+              <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucun résultat trouvé</h3>
+              <p className="text-gray-600">Essayez de modifier vos critères de recherche</p>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredAnnonces.map((annonce) => (
+                <AnnonceCard key={annonce.id} annonce={annonce} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Catégories */}
+      {!searchActive && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-display font-bold text-gray-900 mb-4">
+              Nos <span className="gradient-text">Catégories</span>
+            </h2>
+            <p className="text-gray-600 text-lg">Découvrez notre large sélection de biens immobiliers</p>
+          </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          {[
+            { 
+              icon: "🏘️", 
+              title: "Immobilier", 
+              filter: "immobilier",
+              description: "Tous types de biens"
+            },
+            { 
+              icon: "🏢", 
+              title: "Logement", 
+              filter: "logement",
+              description: "Appartements, maisons..."
+            },
+            { 
+              icon: "🏞️", 
+              title: "Terrain", 
+              filter: "terrain",
+              description: "Terrains à vendre"
+            },
+            { 
+              icon: "🏗️", 
+              title: "Espace de travail", 
+              filter: "espace",
+              description: "Bureaux, locaux..."
+            },
+            { 
+              icon: "🅿️", 
+              title: "Place de parc", 
+              filter: "parc",
+              description: "Parkings"
+            }
+          ].map((cat, idx) => (
+            <Link
+              key={idx}
+              to={`/annonces?search=${cat.filter}`}
+              className="card p-6 text-center group cursor-pointer transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl"
+            >
+              <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform">{cat.icon}</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700 transition-colors">{cat.title}</h3>
+              <p className="text-sm text-gray-600">{cat.description}</p>
+            </Link>
           ))}
         </div>
       </div>
+      )}
 
       {/* Annonces */}
-      <div className="bg-gray-50 py-16">
+      {!searchActive && (
+        <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
@@ -181,6 +306,7 @@ function Accueil() {
           )}
         </div>
       </div>
+      )}
 
       {/* Section Carte Interactive */}
       <div className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -200,22 +326,6 @@ function Accueil() {
               <MapView annonces={annonces} />
             </div>
           )}
-
-          {/* Bouton pour voir toutes les annonces */}
-          <div className="text-center mt-8">
-            <Link 
-              to="/annonces" 
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-700 to-primary-600 hover:from-primary-800 hover:to-primary-700 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-            >
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Explorer toutes les annonces
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
         </div>
       </div>
 

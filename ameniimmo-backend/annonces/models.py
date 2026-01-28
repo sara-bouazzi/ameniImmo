@@ -1,7 +1,27 @@
 from django.db import models
 from django.conf import settings
+import uuid
+import os
+
+
+def image_upload_path(instance, filename):
+    """Génère un chemin unique pour chaque image uploadée"""
+    # Récupérer l'extension du fichier
+    ext = filename.split('.')[-1]
+    # Générer un nom unique avec UUID
+    unique_filename = f"{uuid.uuid4().hex}.{ext}"
+    return os.path.join('photos', unique_filename)
+
 
 class Immobilier(models.Model):
+    TYPE_CHOICES = [
+        ('Immobilier', 'Immobilier'),
+        ('Logement', 'Logement'),
+        ('Terrain', 'Terrain'),
+        ('Espace de travail', 'Espace de travail'),
+        ('Place de parc', 'Place de parc'),
+    ]
+    
     titre = models.CharField(max_length=200)
     description = models.TextField()
     prix = models.FloatField()
@@ -12,6 +32,7 @@ class Immobilier(models.Model):
     fonctionnalite = models.CharField(max_length=200)
     datePublication = models.DateField(auto_now_add=True)
     statut = models.CharField(max_length=50)
+    type_bien = models.CharField(max_length=50, choices=TYPE_CHOICES, default='Immobilier')
     approuve = models.BooleanField(default=False)
     proprietaire = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -32,7 +53,7 @@ class ImageImmobilier(models.Model):
         on_delete=models.CASCADE,
         related_name='images'
     )
-    image = models.ImageField(upload_to='photos/')
+    image = models.ImageField(upload_to=image_upload_path)
     description = models.CharField(max_length=200, blank=True, null=True)
     ordre = models.IntegerField(default=0)
     date_ajout = models.DateTimeField(auto_now_add=True)
@@ -42,6 +63,13 @@ class ImageImmobilier(models.Model):
 
     def __str__(self):
         return f"Image {self.ordre} - {self.immobilier.titre}"
+    
+    def delete(self, *args, **kwargs):
+        """Supprime le fichier physique lors de la suppression de l'objet"""
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
 
 
 class Visite(models.Model):

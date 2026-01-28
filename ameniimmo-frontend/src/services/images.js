@@ -7,13 +7,19 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
  * @param {number} annonceId - ID de l'annonce
  * @param {Array} images - Tableau de fichiers images
  * @param {string} token - Token d'authentification
+ * @param {boolean} replace - Si true, remplace toutes les images existantes
  */
-export const uploadImages = async (annonceId, images, token) => {
+export const uploadImages = async (annonceId, images, token, replace = false) => {
   const formData = new FormData();
   
   images.forEach((image) => {
     formData.append('images', image);
   });
+  
+  // Ajouter le paramètre replace si nécessaire
+  if (replace) {
+    formData.append('replace', 'true');
+  }
 
   const response = await axios.post(
     `${API_URL}/api/annonces/${annonceId}/upload_images/`,

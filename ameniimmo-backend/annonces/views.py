@@ -22,7 +22,12 @@ class ImmobilierViewSet(viewsets.ModelViewSet):
 
 	@action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser], permission_classes=[IsAuthenticated])
 	def upload_images(self, request, pk=None):
-		"""Upload une ou plusieurs images pour une annonce"""
+		"""Upload une ou plusieurs images pour une annonce
+		
+		Paramètres:
+		- images: liste de fichiers images
+		- replace: si True, remplace toutes les images existantes (défaut: False)
+		"""
 		immobilier = self.get_object()
 		
 		# Vérifier que l'utilisateur est le propriétaire
@@ -40,13 +45,25 @@ class ImmobilierViewSet(viewsets.ModelViewSet):
 				status=status.HTTP_400_BAD_REQUEST
 			)
 		
+		# Vérifier si on doit remplacer les images existantes
+		replace = request.data.get('replace', 'false').lower() == 'true'
+		
+		if replace:
+			# Supprimer toutes les images existantes
+			ImageImmobilier.objects.filter(immobilier=immobilier).delete()
+			start_order = 0
+		else:
+			# Commencer après les images existantes
+			existing_count = ImageImmobilier.objects.filter(immobilier=immobilier).count()
+			start_order = existing_count
+		
 		# Créer les objets ImageImmobilier
 		created_images = []
 		for i, image_file in enumerate(images):
 			image_obj = ImageImmobilier.objects.create(
 				immobilier=immobilier,
 				image=image_file,
-				ordre=i
+				ordre=start_order + i
 			)
 			created_images.append(image_obj)
 		

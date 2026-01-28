@@ -48,6 +48,10 @@ function CreerAnnonce() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Empêcher la double soumission
+    if (loading) return;
+    
     setError(null);
     setLoading(true);
 

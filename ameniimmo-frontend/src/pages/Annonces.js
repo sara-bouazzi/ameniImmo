@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import AnnonceCard from "../components/AnnonceCard";
 import MapView from "../components/MapView";
 import { getAnnonces } from "../services/annonces";
 
 function Annonces() {
+  const location = useLocation();
   const [annonces, setAnnonces] = useState([]);
   const [filteredAnnonces, setFilteredAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,47 @@ function Annonces() {
     sallesBain: "",
     sortBy: "recent"
   });
+
+  // Charger les paramètres de recherche depuis l'URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const newFilters = { ...filters };
+    
+    // Mapper "vente" -> "à vendre" et "location" -> "à louer"
+    const statutParam = params.get('statut');
+    if (statutParam === 'vente') {
+      newFilters.statut = 'à vendre';
+    } else if (statutParam === 'location') {
+      newFilters.statut = 'à louer';
+    }
+    
+    // Paramètre de recherche général
+    const searchParam = params.get('search');
+    if (searchParam) {
+      const searchTerm = searchParam.toLowerCase();
+      // Mapper les termes de recherche aux filtres appropriés
+      if (searchTerm.includes('vendre')) {
+        newFilters.statut = 'à vendre';
+      } else if (searchTerm.includes('louer')) {
+        newFilters.statut = 'à louer';
+      } else {
+        // Pour les autres, utiliser comme recherche de ville
+        newFilters.ville = searchParam;
+      }
+    }
+    
+    if (params.get('type')) newFilters.type = params.get('type');
+    if (params.get('ville')) newFilters.ville = params.get('ville');
+    if (params.get('prixMin')) newFilters.prixMin = params.get('prixMin');
+    if (params.get('prixMax')) newFilters.prixMax = params.get('prixMax');
+    if (params.get('superficieMin')) newFilters.superficieMin = params.get('superficieMin');
+    if (params.get('superficieMax')) newFilters.superficieMax = params.get('superficieMax');
+    if (params.get('chambres')) newFilters.chambres = params.get('chambres');
+    if (params.get('sallesBain')) newFilters.sallesBain = params.get('sallesBain');
+    
+    setFilters(newFilters);
+    setShowFilters(true); // Afficher les filtres si on vient d'une recherche
+  }, [location.search]);
 
   useEffect(() => {
     let mounted = true;
@@ -48,20 +91,32 @@ function Annonces() {
   useEffect(() => {
     let filtered = [...annonces];
 
-    // Filtre par statut
+    // Filtre par statut (normaliser les valeurs)
     if (filters.statut) {
-      filtered = filtered.filter(a => a.statut === filters.statut);
+      filtered = filtered.filter(a => {
+        const annonceStatut = a.statut ? a.statut.toLowerCase().trim() : '';
+        const filterStatut = filters.statut.toLowerCase().trim();
+        return annonceStatut.includes(filterStatut) || filterStatut.includes(annonceStatut);
+      });
     }
 
-    // Filtre par type
+    // Filtre par type - comparaison exacte sur le champ type_bien uniquement
     if (filters.type) {
-      filtered = filtered.filter(a => a.type_bien === filters.type);
+      filtered = filtered.filter(a => 
+        a.type_bien?.toLowerCase() === filters.type.toLowerCase()
+      );
     }
 
-    // Filtre par ville
+    // Filtre par ville (recherche aussi dans région, gouvernorat, titre et description)
     if (filters.ville) {
+      const searchTerm = filters.ville.toLowerCase();
       filtered = filtered.filter(a => 
-        a.ville && a.ville.toLowerCase().includes(filters.ville.toLowerCase())
+        (a.ville && a.ville.toLowerCase().includes(searchTerm)) ||
+        (a.region && a.region.toLowerCase().includes(searchTerm)) ||
+        (a.gouvernorat && a.gouvernorat.toLowerCase().includes(searchTerm)) ||
+        (a.titre && a.titre.toLowerCase().includes(searchTerm)) ||
+        (a.description && a.description.toLowerCase().includes(searchTerm)) ||
+        (a.fonctionnalite && a.fonctionnalite.toLowerCase().includes(searchTerm))
       );
     }
 
@@ -75,10 +130,10 @@ function Annonces() {
 
     // Filtre par superficie
     if (filters.superficieMin) {
-      filtered = filtered.filter(a => a.superficie >= parseFloat(filters.superficieMin));
+      filtered = filtered.filter(a => (a.surface || a.superficie) >= parseFloat(filters.superficieMin));
     }
     if (filters.superficieMax) {
-      filtered = filtered.filter(a => a.superficie <= parseFloat(filters.superficieMax));
+      filtered = filtered.filter(a => (a.surface || a.superficie) <= parseFloat(filters.superficieMax));
     }
 
     // Filtre par chambres
@@ -116,21 +171,6 @@ function Annonces() {
     setFilters({
       ...filters,
       [e.target.name]: e.target.value
-    });
-  };
-
-  const resetFilters = () => {
-    setFilters({
-      statut: "",
-      type: "",
-      ville: "",
-      prixMin: "",
-      prixMax: "",
-      superficieMin: "",
-      superficieMax: "",
-      chambres: "",
-      sallesBain: "",
-      sortBy: "recent"
     });
   };
 
@@ -205,14 +245,8 @@ function Annonces() {
             {/* Filtres en haut */}
             <div className={`${showFilters ? 'block' : 'hidden md:block'}`}>
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <div className="flex items-center justify-between mb-6">
+                <div className="mb-6">
                   <h3 className="text-lg font-bold text-gray-900">Filtres</h3>
-                  <button
-                    onClick={resetFilters}
-                    className="text-sm text-primary-600 hover:text-primary-700 font-medium"
-                  >
-                    Réinitialiser
-                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -352,13 +386,7 @@ function Annonces() {
                         </svg>
                       </div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-3">Aucune annonce trouvée</h3>
-                      <p className="text-gray-500 text-lg mb-6">Essayez de modifier vos critères de recherche</p>
-                      <button
-                        onClick={resetFilters}
-                        className="btn-primary"
-                      >
-                        Réinitialiser les filtres
-                      </button>
+                      <p className="text-gray-500 text-lg">Essayez de modifier vos critères de recherche</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function SearchBar() {
+function SearchBar({ onSearch }) {
   const navigate = useNavigate();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [searchParams, setSearchParams] = useState({
@@ -25,14 +25,20 @@ function SearchBar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Construire les paramètres de recherche
-    const params = new URLSearchParams();
-    Object.keys(searchParams).forEach(key => {
-      if (searchParams[key]) {
-        params.append(key, searchParams[key]);
-      }
-    });
-    navigate(`/annonces?${params.toString()}`);
+    
+    // Si onSearch est fourni, utiliser la recherche locale
+    if (onSearch) {
+      onSearch(searchParams);
+    } else {
+      // Sinon, rediriger vers la page annonces
+      const params = new URLSearchParams();
+      Object.keys(searchParams).forEach(key => {
+        if (searchParams[key]) {
+          params.append(key, searchParams[key]);
+        }
+      });
+      navigate(`/annonces?${params.toString()}`);
+    }
   };
 
   return (

@@ -157,13 +157,43 @@ function MesAnnonces() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {annonces.map((annonce) => (
-              <div key={annonce.id} className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 transform hover:scale-105 transition-all duration-300">
-                {/* Image placeholder */}
+              <div 
+                key={annonce.id} 
+                className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 transform hover:scale-105 transition-all duration-300 cursor-pointer"
+                onClick={() => navigate(`/annonces/${annonce.id}`)}
+              >
+                {/* Image de l'annonce */}
                 <div className="h-56 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/10"></div>
-                  <svg className="w-20 h-20 text-white opacity-40 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
+                  {annonce.images && annonce.images.length > 0 ? (
+                    <>
+                      <img
+                        src={annonce.images[0].image}
+                        alt={annonce.titre}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                      <div className="absolute inset-0 bg-black/10"></div>
+                      
+                      {/* Badge nombre d'images */}
+                      {annonce.images.length > 1 && (
+                        <div className="absolute bottom-4 left-4 z-10">
+                          <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold bg-black/50 text-white backdrop-blur-sm">
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {annonce.images.length}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 bg-black/10"></div>
+                      <svg className="w-20 h-20 text-white opacity-40 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                    </>
+                  )}
                   
                   {/* Badge statut en haut */}
                   <div className="absolute top-4 right-4">
@@ -215,6 +245,11 @@ function MesAnnonces() {
                   <div className="flex gap-2">
                     {!annonce.approuve && (
                       <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // TODO: Implémenter la modification
+                          navigate(`/annonces/modifier/${annonce.id}`);
+                        }}
                         className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-4 py-2.5 rounded-xl font-semibold transition-all transform hover:scale-105 flex items-center justify-center"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,7 +259,10 @@ function MesAnnonces() {
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(annonce.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(annonce.id);
+                      }}
                       className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2.5 rounded-xl font-semibold transition-all transform hover:scale-105 flex items-center justify-center"
                     >
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

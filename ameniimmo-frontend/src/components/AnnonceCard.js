@@ -41,9 +41,9 @@ function AnnonceCard({ annonce }) {
         {annonce.images && annonce.images.length > 0 ? (
           <>
             <img
-              src={`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'}${annonce.images[0].image.startsWith('/') ? '' : '/'}${annonce.images[0].image}`}
+              src={annonce.images[0].image}
               alt={titre}
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
               onError={(e) => { e.target.onerror = null; e.target.src = ''; e.target.style.display = 'none'; }}
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-300"></div>

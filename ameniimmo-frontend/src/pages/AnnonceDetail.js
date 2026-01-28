@@ -102,12 +102,12 @@ function AnnonceDetail() {
             <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden border border-gray-100">
               <div className="relative h-96 bg-gradient-to-br from-primary-500 to-primary-700 overflow-hidden">
                 {annonce.images && annonce.images.length > 0 ? (
-                  <>
+<>
                     {/* Image principale */}
                     <img
-                      src={`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'}${annonce.images[currentImageIndex].image.startsWith('/') ? '' : '/'}${annonce.images[currentImageIndex].image}`}
+                      src={annonce.images[currentImageIndex].image}
                       alt={annonce.titre}
-                      className="w-full h-full object-cover"
+                      className="absolute inset-0 w-full h-full object-cover"
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />
                     
@@ -181,14 +181,14 @@ function AnnonceDetail() {
                       <button
                         key={index}
                         onClick={() => setCurrentImageIndex(index)}
-                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                           index === currentImageIndex ? 'border-primary-600' : 'border-transparent opacity-60 hover:opacity-100'
                         }`}
                       >
                         <img
-                          src={`${process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'}${img.image.startsWith('/') ? '' : '/'}${img.image}`}
+                          src={img.image}
                           alt={`Miniature ${index + 1}`}
-                          className="w-full h-full object-cover"
+                          className="absolute inset-0 w-full h-full object-cover"
                           onError={(e) => { e.target.style.display = 'none'; }}
                         />
                       </button>
