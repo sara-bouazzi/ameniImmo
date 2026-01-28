@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -23,7 +22,7 @@ function Footer() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
                 <a href="tel:+21656101017" className="hover:text-primary-400 transition-colors">56 101 017</a>
-                <span className="mx-1">//</span>
+                <span className="mx-1"> / </span>
                 <a href="tel:+21654438773" className="hover:text-primary-400 transition-colors">54 438 773</a>
               </p>
               <p className="flex items-center">

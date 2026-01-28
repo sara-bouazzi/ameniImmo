@@ -18,6 +18,7 @@ function AdminDashboard() {
       return;
     }
     fetchAnnonces();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
   const fetchAnnonces = async () => {

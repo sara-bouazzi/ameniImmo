@@ -66,6 +66,7 @@ function Annonces() {
     
     setFilters(newFilters);
     setShowFilters(true); // Afficher les filtres si on vient d'une recherche
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   useEffect(() => {

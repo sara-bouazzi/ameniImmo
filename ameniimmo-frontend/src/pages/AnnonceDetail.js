@@ -15,6 +15,7 @@ function AnnonceDetail() {
 
   useEffect(() => {
     fetchAnnonce();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchAnnonce = async () => {

@@ -17,4 +17,5 @@ export async function getAnnonces() {
   return data;
 }
 
-export default { getAnnonces };
+const annonceService = { getAnnonces };
+export default annonceService;

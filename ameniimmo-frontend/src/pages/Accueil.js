@@ -225,37 +225,37 @@ function Accueil() {
             { 
               icon: "🏘️", 
               title: "Immobilier", 
-              filter: "immobilier",
+              filter: "Immobilier",
               description: "Tous types de biens"
             },
             { 
               icon: "🏢", 
               title: "Logement", 
-              filter: "logement",
+              filter: "Logement",
               description: "Appartements, maisons..."
             },
             { 
               icon: "🏞️", 
               title: "Terrain", 
-              filter: "terrain",
+              filter: "Terrain",
               description: "Terrains à vendre"
             },
             { 
               icon: "🏗️", 
               title: "Espace de travail", 
-              filter: "espace",
+              filter: "Espace de travail",
               description: "Bureaux, locaux..."
             },
             { 
               icon: "🅿️", 
               title: "Place de parc", 
-              filter: "parc",
+              filter: "Place de parc",
               description: "Parkings"
             }
           ].map((cat, idx) => (
             <Link
               key={idx}
-              to={`/annonces?search=${cat.filter}`}
+              to={`/annonces?type=${encodeURIComponent(cat.filter)}`}
               className="card p-6 text-center group cursor-pointer transform hover:-translate-y-2 transition-all duration-300 hover:shadow-2xl"
             >
               <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform">{cat.icon}</div>
