@@ -15,13 +15,19 @@ function formatPrice(value) {
 function AnnonceCard({ annonce }) {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  
+  // Vérification de sécurité
+  if (!annonce || !annonce.id) {
+    return null;
+  }
+  
   const {
     id,
-    titre,
-    description,
+    titre = "Sans titre",
+    description = "",
     prix,
     surface,
-    ville,
+    ville = "",
     statut,
     fonctionnalite,
   } = annonce;

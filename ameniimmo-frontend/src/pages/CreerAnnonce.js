@@ -52,6 +52,26 @@ function CreerAnnonce() {
     // Empêcher la double soumission
     if (loading) return;
     
+    // Validation des champs requis
+    if (!formData.titre || !formData.prix || !formData.surface) {
+      setError("Veuillez remplir tous les champs obligatoires");
+      return;
+    }
+
+    // Validation des nombres
+    const prix = parseFloat(formData.prix);
+    const surface = parseFloat(formData.surface);
+    
+    if (isNaN(prix) || prix <= 0) {
+      setError("Le prix doit être un nombre positif");
+      return;
+    }
+    
+    if (isNaN(surface) || surface <= 0) {
+      setError("La surface doit être un nombre positif");
+      return;
+    }
+    
     setError(null);
     setLoading(true);
 
@@ -63,8 +83,8 @@ function CreerAnnonce() {
         `${API_URL}/api/annonces/`,
         {
           ...formData,
-          prix: parseFloat(formData.prix),
-          surface: parseFloat(formData.surface),
+          prix: prix,
+          surface: surface,
           approuve: false, // Par défaut en attente d'approbation
         },
         {

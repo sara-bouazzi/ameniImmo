@@ -38,6 +38,8 @@ function Annonces() {
       newFilters.statut = 'à vendre';
     } else if (statutParam === 'location') {
       newFilters.statut = 'à louer';
+    } else if (statutParam) {
+      newFilters.statut = statutParam;
     }
     
     // Paramètre de recherche général
