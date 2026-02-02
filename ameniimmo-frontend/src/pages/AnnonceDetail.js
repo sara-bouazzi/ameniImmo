@@ -308,7 +308,7 @@ function AnnonceDetail() {
                 </a>
 
                 <a
-                  href={`mailto:med.ouerfelli2@gmail.com?subject=${encodeURIComponent('Demande d\'information : ' + annonce.titre)}&body=${encodeURIComponent('Bonjour,\n\nJe suis intéressé par cette annonce :\n' + annonce.titre + '\nPrix : ' + formatPrice(annonce.prix) + ' TND\n\nMerci de me contacter.\n\nCordialement')}`}
+                  href={`mailto:med.ouerfelli2@gmail.com?subject=${encodeURIComponent("Demande d'information : " + annonce.titre)}&body=${encodeURIComponent("Bonjour,\n\nJe suis intéressé par cette annonce :\n" + annonce.titre + "\nPrix : " + formatPrice(annonce.prix) + " TND\n\nMerci de me contacter.\n\nCordialement")}`}
                   className="flex items-center justify-center w-full bg-white border-2 border-gray-300 text-gray-700 hover:border-primary-600 hover:text-primary-600 py-3 rounded-lg font-semibold transition-all shadow-sm"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
