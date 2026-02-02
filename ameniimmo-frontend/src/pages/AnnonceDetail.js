@@ -349,11 +349,13 @@ function AnnonceDetail() {
                 </div>
                 FIN SECTION EMAIL COMMENTÉE */}
 
+                {/* BOUTON FAVORI - COMMENTÉ TEMPORAIREMENT
                 {user && user.role === "visiteur" && (
                   <div className="pt-3 border-t border-gray-200">
                     <FavoriteButton annonceId={annonce.id} />
                   </div>
                 )}
+                FIN BOUTON FAVORI COMMENTÉ */}
               </div>
             </div>
           </div>
