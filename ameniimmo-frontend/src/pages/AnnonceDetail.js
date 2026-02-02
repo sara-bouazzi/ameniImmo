@@ -307,6 +307,7 @@ function AnnonceDetail() {
                   WhatsApp
                 </a>
 
+                {/* SECTION EMAIL - COMMENTÉE TEMPORAIREMENT 
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
                   <div className="flex items-center justify-center gap-2 mb-3">
                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,6 +347,7 @@ function AnnonceDetail() {
                     </button>
                   </div>
                 </div>
+                FIN SECTION EMAIL COMMENTÉE */}
 
                 {user && user.role === "visiteur" && (
                   <div className="pt-3 border-t border-gray-200">
