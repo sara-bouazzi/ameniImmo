@@ -39,13 +39,13 @@ function Accueil() {
       const experience = anneeActuelle - anneeDebut;
 
       // Récupérer les utilisateurs pour compter les clients
-      let clientsCount = 2; // Valeur par défaut
+      let clientsCount = 150; // Valeur par défaut
       try {
         const usersResponse = await axios.get(`${API_URL}/api/users/`);
         const clients = usersResponse.data.filter((u) => u.role === 'visiteur' || u.role === 'owner');
         clientsCount = clients.length;
       } catch (userError) {
-        console.log("Impossible de récupérer les utilisateurs, utilisation de la valeur par défaut");
+        // Utiliser la valeur par défaut silencieusement
       }
 
       setStats({
