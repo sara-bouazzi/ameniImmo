@@ -40,6 +40,11 @@ function AnnonceDetail() {
     }
   };
 
+  const copyEmail = () => {
+    navigator.clipboard.writeText("sarra.bouazzi2002@gmail.com");
+    alert("Email copié dans le presse-papiers !");
+  };
+
   const nextImage = () => {
     if (annonce?.images && annonce.images.length > 0) {
       setCurrentImageIndex((prev) => (prev + 1) % annonce.images.length);
@@ -307,17 +312,26 @@ function AnnonceDetail() {
                   WhatsApp
                 </a>
 
-                <a
-                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=sarra.bouazzi2002@gmail.com&su=${encodeURIComponent("Demande d'information : " + annonce.titre)}&body=${encodeURIComponent("Bonjour,\n\nJe suis intéressé par cette annonce :\n" + annonce.titre + "\nPrix : " + formatPrice(annonce.prix) + " TND\n\nMerci de me contacter.\n\nCordialement")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center w-full bg-white border-2 border-gray-300 text-gray-700 hover:border-primary-600 hover:text-primary-600 py-3 rounded-lg font-semibold transition-all shadow-sm"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  Email
-                </a>
+                <div className="bg-gray-50 border-2 border-gray-300 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-2 text-center">Email</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <a 
+                      href="mailto:sarra.bouazzi2002@gmail.com"
+                      className="text-primary-600 hover:text-primary-700 font-semibold text-sm flex-1 text-center"
+                    >
+                      sarra.bouazzi2002@gmail.com
+                    </a>
+                    <button
+                      onClick={copyEmail}
+                      className="flex-shrink-0 bg-primary-600 hover:bg-primary-700 text-white p-2 rounded-lg transition-colors"
+                      title="Copier l'email"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
 
                 {user && user.role === "visiteur" && (
                   <div className="pt-3 border-t border-gray-200">
