@@ -12,8 +12,6 @@ function AnnonceDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   useEffect(() => {
     fetchAnnonce();
@@ -40,17 +38,6 @@ function AnnonceDetail() {
     } catch {
       return value;
     }
-  };
-
-  const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmitContact = (e) => {
-    e.preventDefault();
-    const subject = `Contact depuis Ameni Immo - ${annonce.titre}`;
-    const body = `Nom: ${formData.name}%0D%0AEmail: ${formData.email}%0D%0A%0D%0AMessage:%0D%0A${formData.message}%0D%0A%0D%0AAnnonce: ${annonce.titre}%0D%0APrix: ${formatPrice(annonce.prix)} TND`;
-    window.location.href = `mailto:sarra.bouazzi2002@gmail.com?subject=${subject}&body=${body}`;
   };
 
   const nextImage = () => {
@@ -320,85 +307,20 @@ function AnnonceDetail() {
                   WhatsApp
                 </a>
 
-                <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                  {!showContactForm ? (
-                    <>
-                      <div className="text-center mb-3">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                          <p className="text-sm font-semibold text-gray-700">Email</p>
-                        </div>
-                        <p className="text-primary-600 font-bold text-sm break-all">
-                          sarra.bouazzi2002@gmail.com
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setShowContactForm(true)}
-                        className="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white py-3 px-4 rounded-lg transition-colors font-semibold shadow-sm"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
-                        Envoyer un message
-                      </button>
-                    </>
-                  ) : (
-                    <form onSubmit={handleSubmitContact} className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">Nom</label>
-                        <input
-                          type="text"
-                          name="name"
-                          required
-                          value={formData.name}
-                          onChange={handleFormChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
-                          placeholder="Votre nom"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
-                        <input
-                          type="email"
-                          name="email"
-                          required
-                          value={formData.email}
-                          onChange={handleFormChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
-                          placeholder="votre@email.com"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">Message</label>
-                        <textarea
-                          name="message"
-                          required
-                          value={formData.message}
-                          onChange={handleFormChange}
-                          rows="3"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
-                          placeholder="Votre message..."
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setShowContactForm(false)}
-                          className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg transition-colors font-semibold text-sm"
-                        >
-                          Annuler
-                        </button>
-                        <button
-                          type="submit"
-                          className="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg transition-colors font-semibold text-sm"
-                        >
-                          Envoyer
-                        </button>
-                      </div>
-                    </form>
-                  )}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <h3 className="font-bold text-gray-800">Email</h3>
+                  </div>
+                  <a 
+                    href="mailto:sarra.bouazzi2002@gmail.com"
+                    className="block text-blue-600 hover:text-blue-700 font-bold text-lg mb-3 break-all underline"
+                  >
+                    sarra.bouazzi2002@gmail.com
+                  </a>
+                  <p className="text-xs text-gray-600 italic">Cliquez pour ouvrir votre application email</p>
                 </div>
 
                 {user && user.role === "visiteur" && (
