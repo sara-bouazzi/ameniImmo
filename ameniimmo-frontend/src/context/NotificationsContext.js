@@ -1,103 +1,142 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
 import { AuthContext } from "./AuthContext";
 
 export const NotificationsContext = createContext();
 
 export const NotificationsProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { user, authTokens } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [lastCheck, setLastCheck] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Charger les notifications depuis le localStorage
-  useEffect(() => {
-    if (user) {
-      const storedNotifications = localStorage.getItem(`notifications_${user.id}`);
-      const storedLastCheck = localStorage.getItem(`lastCheck_${user.id}`);
-      
-      if (storedNotifications) {
-        setNotifications(JSON.parse(storedNotifications));
-      }
-      
-      if (storedLastCheck) {
-        setLastCheck(new Date(storedLastCheck));
-      } else {
-        setLastCheck(new Date());
-      }
-    }
-  }, [user]);
+  const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
-  // Calculer le nombre de notifications non lues
-  useEffect(() => {
-    const unread = notifications.filter(n => !n.read).length;
-    setUnreadCount(unread);
-  }, [notifications]);
-
-  // Ajouter une nouvelle notification
-  const addNotification = (notification) => {
-    const newNotification = {
-      id: Date.now(),
-      ...notification,
-      read: false,
-      createdAt: new Date().toISOString()
-    };
-
-    const updated = [newNotification, ...notifications];
-    setNotifications(updated);
+  // Charger les notifications depuis l'API
+  const fetchNotifications = async () => {
+    if (!user || !authTokens?.access) return;
     
-    if (user) {
-      localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updated));
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/api/notifications/`, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+      });
+      
+      setNotifications(response.data);
+      const unread = response.data.filter(n => n.statut === 'non_lu').length;
+      setUnreadCount(unread);
+    } catch (error) {
+      console.error("Erreur lors du chargement des notifications:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Charger les notifications au montage et toutes les 30 secondes
+  useEffect(() => {
+    if (user && authTokens?.access) {
+      fetchNotifications();
+      
+      // Rafraîchir toutes les 30 secondes
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user, authTokens]);
+
+  // Calculer le nombre de notifications non lues
+  useEffect(() => {
+    const unread = notifications.filter(n => n.statut === 'non_lu').length;
+    setUnreadCount(unread);
+  }, [notifications]);
+
   // Marquer une notification comme lue
-  const markAsRead = (notificationId) => {
-    const updated = notifications.map(n => 
-      n.id === notificationId ? { ...n, read: true } : n
-    );
-    setNotifications(updated);
+  const markAsRead = async (notificationId) => {
+    if (!authTokens?.access) return;
     
-    if (user) {
-      localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updated));
+    try {
+      await axios.post(
+        `${API_URL}/api/notifications/${notificationId}/marquer_lu/`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens.access}`,
+          },
+        }
+      );
+      
+      // Mettre à jour localement
+      const updated = notifications.map(n => 
+        n.id === notificationId ? { ...n, statut: 'lu' } : n
+      );
+      setNotifications(updated);
+    } catch (error) {
+      console.error("Erreur lors du marquage comme lu:", error);
     }
   };
 
   // Marquer toutes les notifications comme lues
-  const markAllAsRead = () => {
-    const updated = notifications.map(n => ({ ...n, read: true }));
-    setNotifications(updated);
+  const markAllAsRead = async () => {
+    if (!authTokens?.access) return;
     
-    if (user) {
-      localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updated));
+    try {
+      await axios.post(
+        `${API_URL}/api/notifications/marquer_toutes_lues/`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens.access}`,
+          },
+        }
+      );
+      
+      // Mettre à jour localement
+      const updated = notifications.map(n => ({ ...n, statut: 'lu' }));
+      setNotifications(updated);
+    } catch (error) {
+      console.error("Erreur lors du marquage de toutes comme lues:", error);
     }
   };
 
   // Supprimer une notification
-  const removeNotification = (notificationId) => {
-    const updated = notifications.filter(n => n.id !== notificationId);
-    setNotifications(updated);
+  const removeNotification = async (notificationId) => {
+    if (!authTokens?.access) return;
     
-    if (user) {
-      localStorage.setItem(`notifications_${user.id}`, JSON.stringify(updated));
+    try {
+      await axios.delete(`${API_URL}/api/notifications/${notificationId}/`, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+      });
+      
+      // Mettre à jour localement
+      const updated = notifications.filter(n => n.id !== notificationId);
+      setNotifications(updated);
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
     }
   };
 
   // Supprimer toutes les notifications
-  const clearAll = () => {
-    setNotifications([]);
+  const clearAll = async () => {
+    if (!authTokens?.access) return;
     
-    if (user) {
-      localStorage.removeItem(`notifications_${user.id}`);
-    }
-  };
-
-  // Mettre à jour la dernière vérification
-  const updateLastCheck = () => {
-    const now = new Date();
-    setLastCheck(now);
-    
-    if (user) {
-      localStorage.setItem(`lastCheck_${user.id}`, now.toISOString());
+    try {
+      // Supprimer toutes une par une
+      await Promise.all(
+        notifications.map(n => 
+          axios.delete(`${API_URL}/api/notifications/${n.id}/`, {
+            headers: {
+              Authorization: `Bearer ${authTokens.access}`,
+            },
+          })
+        )
+      );
+      
+      setNotifications([]);
+    } catch (error) {
+      console.error("Erreur lors de la suppression de toutes:", error);
     }
   };
 
@@ -105,13 +144,12 @@ export const NotificationsProvider = ({ children }) => {
     <NotificationsContext.Provider value={{ 
       notifications,
       unreadCount,
-      lastCheck,
-      addNotification,
+      loading,
       markAsRead,
       markAllAsRead,
       removeNotification,
       clearAll,
-      updateLastCheck
+      fetchNotifications
     }}>
       {children}
     </NotificationsContext.Provider>

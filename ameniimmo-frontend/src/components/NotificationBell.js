@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function NotificationBell() {
   const { user } = useContext(AuthContext);
-  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification } = useContext(NotificationsContext);
+  const { notifications, unreadCount, markAsRead, markAllAsRead, removeNotification, clearAll } = useContext(NotificationsContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -26,8 +26,10 @@ function NotificationBell() {
 
   const handleNotificationClick = (notification) => {
     markAsRead(notification.id);
-    if (notification.link) {
-      navigate(notification.link);
+    
+    // Rediriger vers l'annonce si disponible
+    if (notification.annonce_id) {
+      navigate(`/annonces/${notification.annonce_id}`);
     }
     setShowDropdown(false);
   };
@@ -45,6 +47,43 @@ function NotificationBell() {
     if (diffHours < 24) return `Il y a ${diffHours}h`;
     if (diffDays < 7) return `Il y a ${diffDays}j`;
     return date.toLocaleDateString('fr-FR');
+  };
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'nouvelle_annonce':
+        return (
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+        );
+      case 'annonce_approuvee':
+        return (
+          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        );
+      case 'annonce_rejetee':
+        return (
+          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        );
+    }
   };
 
   return (
@@ -94,29 +133,30 @@ function NotificationBell() {
                 <div
                   key={notification.id}
                   className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors ${
-                    !notification.read ? 'bg-primary-50' : ''
+                    notification.statut === 'non_lu' ? 'bg-primary-50' : ''
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    {getNotificationIcon(notification.type)}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center mb-1">
-                        {!notification.read && (
+                        {notification.statut === 'non_lu' && (
                           <span className="inline-block w-2 h-2 bg-primary-600 rounded-full mr-2"></span>
                         )}
-                        <p className={`text-sm font-medium text-gray-900 ${!notification.read ? 'font-semibold' : ''}`}>
-                          {notification.title}
+                        <p className={`text-sm text-gray-900 ${notification.statut === 'non_lu' ? 'font-semibold' : ''}`}>
+                          {notification.annonce_titre || 'Notification'}
                         </p>
                       </div>
                       <p className="text-sm text-gray-600 line-clamp-2">{notification.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">{formatTime(notification.createdAt)}</p>
+                      <p className="text-xs text-gray-400 mt-1">{formatTime(notification.date)}</p>
                     </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         removeNotification(notification.id);
                       }}
-                      className="ml-2 text-gray-400 hover:text-gray-600"
+                      className="ml-2 text-gray-400 hover:text-gray-600 flex-shrink-0"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -130,15 +170,15 @@ function NotificationBell() {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+            <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 flex gap-2">
               <button
                 onClick={() => {
-                  navigate('/notifications');
+                  clearAll();
                   setShowDropdown(false);
                 }}
-                className="w-full text-center text-sm text-primary-600 hover:text-primary-700 font-medium"
+                className="flex-1 text-center text-sm text-red-600 hover:text-red-700 font-medium"
               >
-                Voir toutes les notifications
+                Tout supprimer
               </button>
             </div>
           )}

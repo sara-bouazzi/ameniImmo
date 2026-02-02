@@ -24,6 +24,8 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
     # API annonces (liste publique + détail)
     path('api/annonces/', include('annonces.urls')),
+    # API notifications
+    path('api/notifications/', include('notifications.urls')),
 ]
 
 # Servir les fichiers media en développement

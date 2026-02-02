@@ -5,6 +5,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, IsAu
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Immobilier, ImageImmobilier
 from .serializers import ImmobilierSerializer, ImageImmobilierSerializer
+from notifications.models import Notification
+from users.models import Utilisateur
 
 
 class ImmobilierViewSet(viewsets.ModelViewSet):
@@ -18,13 +20,36 @@ class ImmobilierViewSet(viewsets.ModelViewSet):
 
 	def perform_create(self, serializer):
 		"""Enregistre automatiquement le propriétaire lors de la création"""
-		serializer.save(proprietaire=self.request.user)
+		annonce = serializer.save(proprietaire=self.request.user)
+		
+		# Créer une notification pour tous les admins
+		admins = Utilisateur.objects.filter(role='admin')
+		for admin in admins:
+			Notification.objects.create(
+				type='nouvelle_annonce',
+				message=f"Nouvelle annonce créée : {annonce.titre}",
+				destinataire=admin,
+				annonce=annonce,
+				statut='non_lu'
+			)
 	
 	def perform_update(self, serializer):
 		"""Autorise les admins et le propriétaire à modifier l'annonce"""
 		immobilier = self.get_object()
 		if self.request.user.role == 'admin' or immobilier.proprietaire == self.request.user:
-			serializer.save()
+			# Vérifier si l'annonce passe à approuvée
+			ancien_statut = immobilier.approuve
+			annonce = serializer.save()
+			
+			# Si l'annonce vient d'être approuvée par un admin
+			if self.request.user.role == 'admin' and not ancien_statut and annonce.approuve:
+				Notification.objects.create(
+					type='annonce_approuvee',
+					message=f"Votre annonce '{annonce.titre}' a été approuvée et est maintenant visible.",
+					destinataire=annonce.proprietaire,
+					annonce=annonce,
+					statut='non_lu'
+				)
 		else:
 			from rest_framework.exceptions import PermissionDenied
 			raise PermissionDenied("Vous n'êtes pas autorisé à modifier cette annonce")
