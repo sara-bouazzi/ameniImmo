@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, useCallback } from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContext";
 
@@ -13,7 +13,7 @@ export const NotificationsProvider = ({ children }) => {
   const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
   // Charger les notifications depuis l'API
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user || !authTokens?.access) return;
     
     try {
@@ -32,7 +32,7 @@ export const NotificationsProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, authTokens, API_URL]);
 
   // Charger les notifications au montage et toutes les 30 secondes
   useEffect(() => {
@@ -43,7 +43,7 @@ export const NotificationsProvider = ({ children }) => {
       const interval = setInterval(fetchNotifications, 30000);
       return () => clearInterval(interval);
     }
-  }, [user, authTokens]);
+  }, [user, authTokens, fetchNotifications]);
 
   // Calculer le nombre de notifications non lues
   useEffect(() => {

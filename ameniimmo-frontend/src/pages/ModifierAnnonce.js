@@ -431,7 +431,7 @@ function ModifierAnnonce() {
                     <div key={index} className="relative group">
                       <img
                         src={img.image}
-                        alt={`Image ${index + 1}`}
+                        alt={`Annonce ${index + 1}`}
                         className="w-full h-32 object-cover rounded-xl border-2 border-gray-200"
                       />
                       <button
