@@ -307,20 +307,44 @@ function AnnonceDetail() {
                   WhatsApp
                 </a>
 
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
                   <div className="flex items-center justify-center gap-2 mb-3">
                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <h3 className="font-bold text-gray-800">Email</h3>
+                    <h3 className="font-bold text-gray-800">Contactez-nous par Email</h3>
                   </div>
-                  <a 
-                    href="mailto:sarra.bouazzi2002@gmail.com"
-                    className="block text-blue-600 hover:text-blue-700 font-bold text-lg mb-3 break-all underline"
-                  >
+                  
+                  <p className="text-center text-blue-600 hover:text-blue-700 font-bold text-base mb-4 break-all select-all cursor-text">
                     sarra.bouazzi2002@gmail.com
-                  </a>
-                  <p className="text-xs text-gray-600 italic">Cliquez pour ouvrir votre application email</p>
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText("sarra.bouazzi2002@gmail.com");
+                        alert("✅ Email copié !\n\nsarra.bouazzi2002@gmail.com\n\nVous pouvez maintenant aller sur Gmail ou votre application email et coller cette adresse.");
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors font-semibold shadow-sm"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Copier l'email
+                    </button>
+                    
+                    <a
+                      href="https://mail.google.com/mail/?view=cm&fs=1&to=sarra.bouazzi2002@gmail.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50 py-3 px-4 rounded-lg transition-colors font-semibold shadow-sm"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L12 9.548l8.073-6.055C21.69 2.28 24 3.434 24 5.457z"/>
+                      </svg>
+                      Ouvrir Gmail
+                    </a>
+                  </div>
                 </div>
 
                 {user && user.role === "visiteur" && (
