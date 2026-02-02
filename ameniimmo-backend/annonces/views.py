@@ -19,6 +19,23 @@ class ImmobilierViewSet(viewsets.ModelViewSet):
 	def perform_create(self, serializer):
 		"""Enregistre automatiquement le propriétaire lors de la création"""
 		serializer.save(proprietaire=self.request.user)
+	
+	def perform_update(self, serializer):
+		"""Autorise les admins et le propriétaire à modifier l'annonce"""
+		immobilier = self.get_object()
+		if self.request.user.role == 'admin' or immobilier.proprietaire == self.request.user:
+			serializer.save()
+		else:
+			from rest_framework.exceptions import PermissionDenied
+			raise PermissionDenied("Vous n'êtes pas autorisé à modifier cette annonce")
+	
+	def perform_destroy(self, instance):
+		"""Autorise les admins et le propriétaire à supprimer l'annonce"""
+		if self.request.user.role == 'admin' or instance.proprietaire == self.request.user:
+			instance.delete()
+		else:
+			from rest_framework.exceptions import PermissionDenied
+			raise PermissionDenied("Vous n'êtes pas autorisé à supprimer cette annonce")
 
 	@action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser], permission_classes=[IsAuthenticated])
 	def upload_images(self, request, pk=None):
@@ -30,8 +47,8 @@ class ImmobilierViewSet(viewsets.ModelViewSet):
 		"""
 		immobilier = self.get_object()
 		
-		# Vérifier que l'utilisateur est le propriétaire
-		if immobilier.proprietaire != request.user:
+		# Vérifier que l'utilisateur est le propriétaire ou admin
+		if immobilier.proprietaire != request.user and request.user.role != 'admin':
 			return Response(
 				{'error': 'Vous n\'êtes pas autorisé à modifier cette annonce'},
 				status=status.HTTP_403_FORBIDDEN
@@ -76,8 +93,8 @@ class ImmobilierViewSet(viewsets.ModelViewSet):
 		"""Supprimer une image d'une annonce"""
 		immobilier = self.get_object()
 		
-		# Vérifier que l'utilisateur est le propriétaire
-		if immobilier.proprietaire != request.user:
+		# Vérifier que l'utilisateur est le propriétaire ou admin
+		if immobilier.proprietaire != request.user and request.user.role != 'admin':
 			return Response(
 				{'error': 'Vous n\'êtes pas autorisé à modifier cette annonce'},
 				status=status.HTTP_403_FORBIDDEN

@@ -7,6 +7,7 @@ import AnnonceDetail from "../pages/AnnonceDetail";
 import AdminDashboard from "../pages/AdminDashboard";
 import MesAnnonces from "../pages/MesAnnonces";
 import CreerAnnonce from "../pages/CreerAnnonce";
+import ModifierAnnonce from "../pages/ModifierAnnonce";
 import Accueil from "../pages/Accueil";
 import Favoris from "../pages/Favoris";
 import PrivateRoute from "./PrivateRoute";
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: "/admin/dashboard", element: <PrivateRoute><AdminDashboard /></PrivateRoute> },
       { path: "/mes-annonces", element: <PrivateRoute><MesAnnonces /></PrivateRoute> },
       { path: "/annonces/creer", element: <PrivateRoute><CreerAnnonce /></PrivateRoute> },
+      { path: "/annonces/modifier/:id", element: <PrivateRoute><ModifierAnnonce /></PrivateRoute> },
     ],
   },
 ]);

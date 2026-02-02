@@ -255,6 +255,20 @@ function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
+                          <button
+                            onClick={() => navigate(`/annonces/${annonce.id}`)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition"
+                            title="Voir les détails"
+                          >
+                            Voir
+                          </button>
+                          <button
+                            onClick={() => navigate(`/annonces/modifier/${annonce.id}`)}
+                            className="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded-lg transition"
+                            title="Modifier l'annonce"
+                          >
+                            Modifier
+                          </button>
                           {!annonce.approuve && (
                             <button
                               onClick={() => handleApprove(annonce.id)}
